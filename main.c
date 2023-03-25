@@ -4,15 +4,10 @@
 #include <stdbool.h>
 #include <string.h>
 
+#include "./font.h"
+
 #define WINDOW_HEIGHT 800
 #define WINDOW_WIDTH 600
-
-#define FONT "./font.png"
-#define FONT_TEXTURE_WIDTH 192
-#define FONT_TEXTURE_HEIGHT 96
-#define CHAR_WIDTH (FONT_TEXTURE_WIDTH / 16)
-#define CHAR_HEIGHT (FONT_TEXTURE_HEIGHT / 6) 
-#define SCALE_FACTOR 2
 
 void scc(int code) {
     if (code < 0) {
@@ -29,34 +24,8 @@ void* scp(void* ptr) {
     return ptr;
 }
 
-#define ASCII_CHAR_COUNT 126 - 32
-typedef struct _font {
-    SDL_Rect chars[ASCII_CHAR_COUNT];
-} Font;
-
 char buffer[1024];
 size_t buffer_count = 0;
-
-void font_load_font(Font* f) {
-    size_t i = 0;
-    int x = 0, y = 0;
-    while (i < ASCII_CHAR_COUNT) {
-        if (x >= FONT_TEXTURE_WIDTH) {
-            x = 0;
-            y += CHAR_HEIGHT;
-        }
-
-        f->chars[i] = (SDL_Rect) {
-            .x = x,
-            .y = y,
-            .w = FONT_TEXTURE_WIDTH / 18,
-            .h = CHAR_HEIGHT
-        };
-
-        x += CHAR_WIDTH;
-        i++;
-    }
-}
 
 void render_text(const char* text, size_t buffer_count, SDL_Renderer* renderer, SDL_Texture* texture, Font* f) {
     for (size_t i = 0; i < buffer_count; ++i) {
