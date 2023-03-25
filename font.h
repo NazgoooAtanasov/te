@@ -2,6 +2,9 @@
 #define FONT_H_
 
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
+
+#include "common.h"
 
 #define ASCII_CHAR_COUNT 126 - 32
 #define FONT "./font.png"
@@ -13,8 +16,10 @@
 
 typedef struct _font {
     SDL_Rect chars[ASCII_CHAR_COUNT];
+    SDL_Texture* texture;
 } Font;
 
-void font_load_font(Font* f);
+void font_load_font(SDL_Renderer* renderer, Font* f);
+void font_free(Font* f);
 
 #endif // FONT_H_

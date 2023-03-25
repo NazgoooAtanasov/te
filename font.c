@@ -1,6 +1,9 @@
-#include "./font.h"
+#include "font.h"
 
-void font_load_font(Font* f) {
+void font_load_font(SDL_Renderer* renderer, Font* f) {
+    SDL_Texture* texture = scp(IMG_LoadTexture(renderer, FONT));
+    f->texture = texture;
+
     size_t i = 0;
     int x = 0, y = 0;
     while (i < ASCII_CHAR_COUNT) {
@@ -19,5 +22,9 @@ void font_load_font(Font* f) {
         x += CHAR_WIDTH;
         i++;
     }
+}
+
+void font_free(Font* f) {
+    SDL_DestroyTexture(f->texture);
 }
 
