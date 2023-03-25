@@ -3,6 +3,8 @@
 void editor_init(Editor* e, SDL_Window* window) {
     e->buffer_size = 0;
     e->sdlr = scp(SDL_CreateRenderer(window, -1, 0));
+    e->cursor.x = 0;
+    e->cursor.y = 0;
     
     { // font initialization
         Font f;
@@ -26,8 +28,8 @@ void editor_render_text(Editor* e) {
 
 void editor_render_cursor(Editor* e) {
     SDL_Rect dest = {
-        .x = 0 * CHAR_WIDTH * SCALE_FACTOR,
-        .y = 0 * CHAR_HEIGHT * SCALE_FACTOR,
+        .x = e->cursor.x * CHAR_WIDTH * SCALE_FACTOR,
+        .y = e->cursor.y * CHAR_HEIGHT * SCALE_FACTOR,
         .h = CHAR_HEIGHT * SCALE_FACTOR,
         .w = CHAR_WIDTH * SCALE_FACTOR
     };
@@ -45,4 +47,29 @@ void editor_free(Editor* e) {
     SDL_DestroyRenderer(e->sdlr);
 }
 
+void editor_insert_at_cursor(const char* text, Editor* e) {
+    size_t len = strlen(text);
+    if (e->cursor.x == e->buffer_size) {
+        memcpy(&e->text_buff[e->buffer_size], text, len);
+    } else if (e->cursor.x == 0) {
+        memmove(&e->text_buff[0 + len], &e->text_buff[0], e->buffer_size);
+        memcpy(&e->text_buff[0], text, len);
+    } else {
+        memmove(&e->text_buff[e->cursor.x + len], &e->text_buff[e->cursor.x], e->buffer_size - e->cursor.x);
+        memcpy(&e->text_buff[e->cursor.x], text, len);
+    }
+    e->buffer_size += len;
+    e->cursor.x += len;
+}
 
+void editor_delete_at_cursor(Editor* e) {
+    if (e->cursor.x < 0 || e->buffer_size <= 0) return;
+
+    if (e->cursor.x < e->buffer_size && e->cursor.x > 0) {
+        memmove(&e->text_buff[e->cursor.x - 1],
+                &e->text_buff[e->cursor.x],
+                e->buffer_size - e->cursor.x);
+    }
+    e->buffer_size--;
+    e->cursor.x--;
+}

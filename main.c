@@ -33,22 +33,20 @@ int main(void) {
                         } break;
 
                         case SDLK_BACKSPACE: {
-                            if (e.buffer_size > 0) {
-                                e.buffer_size--;
+                            editor_delete_at_cursor(&e);
+                        } break;
+
+                        case SDLK_LEFT: {
+                            if (e.cursor.x > 0) {
+                                e.cursor.x--;
                             }
                         } break;
 
-                        /* case SDLK_LEFT: { */
-                        /*     if (c.curr_x > 0) { */
-                        /*         c.curr_x--; */
-                        /*     } */
-                        /* } break; */
-
-                        /* case SDLK_RIGHT: { */
-                        /*     if (c.curr_x < buffer_count) { */
-                        /*         c.curr_x++; */
-                        /*     } */
-                        /* } break; */
+                        case SDLK_RIGHT: {
+                            if (e.cursor.x < e.buffer_size) {
+                                e.cursor.x++;
+                            }
+                        } break;
                    }
                 } break;
 
@@ -57,12 +55,7 @@ int main(void) {
                 } break;
 
                 case SDL_TEXTINPUT: {
-                    const char* text = event.text.text;
-                    size_t len = strlen(text);
-                    for (size_t i = 0; i < len; ++i) {
-                        e.text_buff[e.buffer_size] = text[i];
-                        e.buffer_size++;
-                    }
+                    editor_insert_at_cursor(event.text.text, &e);
                 } break;
             }
         }
