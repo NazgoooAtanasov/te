@@ -4,16 +4,22 @@
 #include <SDL2/SDL.h>
 #include <stdlib.h>
 #include "font.h"
+#include "stringutil.h"
 
 struct _cursor {
-    size_t x;
-    size_t y;
+    int x;
+    int y;
 };
+
+void cursor_reset_x(struct _cursor* c);
+void cursor_move_x(struct _cursor* c, int val);
+void cursor_move_y(struct _cursor* c, int val);
 
 #define TEXT_BUFF_CAP 1024
 typedef struct _editor {
     char text_buff[TEXT_BUFF_CAP];
     size_t buffer_size;
+    size_t buffer_cursor;
 
     Font font;
     SDL_Renderer* sdlr;

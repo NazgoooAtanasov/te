@@ -1,8 +1,11 @@
 #include "editor.h"
+#include "stringutil.h"
 
 void editor_init(Editor* e, SDL_Window* window) {
     e->buffer_size = 0;
+    e->buffer_cursor = 0;
     e->sdlr = scp(SDL_CreateRenderer(window, -1, 0));
+
     e->cursor.x = 0;
     e->cursor.y = 0;
     
@@ -14,15 +17,23 @@ void editor_init(Editor* e, SDL_Window* window) {
 }
 
 void editor_render_text(Editor* e) {
+    int rendering_x = 0, rendering_y = 0;
     for (size_t i = 0; i < e->buffer_size; ++i) {
         int symbol = e->text_buff[i];
-        SDL_Rect pos = (SDL_Rect) {
-            .x = i * CHAR_WIDTH * SCALE_FACTOR,
-            .y = 0 * CHAR_HEIGHT * SCALE_FACTOR,
-            .h = CHAR_HEIGHT * SCALE_FACTOR,
-            .w = CHAR_WIDTH * SCALE_FACTOR
-        };
-        SDL_RenderCopy(e->sdlr, e->font.texture, &e->font.chars[symbol - 32], &pos);
+
+        if (symbol == '\n') {
+            rendering_y++;
+            rendering_x = 0;
+        } else {
+            SDL_Rect pos = (SDL_Rect) {
+                .x = rendering_x * CHAR_WIDTH * SCALE_FACTOR,
+                .y = rendering_y * CHAR_HEIGHT * SCALE_FACTOR,
+                .h = CHAR_HEIGHT * SCALE_FACTOR,
+                .w = CHAR_WIDTH * SCALE_FACTOR
+            };
+            SDL_RenderCopy(e->sdlr, e->font.texture, &e->font.chars[symbol - 32], &pos);
+            rendering_x++;
+        }
     }
 }
 
@@ -49,27 +60,58 @@ void editor_free(Editor* e) {
 
 void editor_insert_at_cursor(const char* text, Editor* e) {
     size_t len = strlen(text);
-    if (e->cursor.x == e->buffer_size) {
+    if (e->buffer_cursor == e->buffer_size) {
         memcpy(&e->text_buff[e->buffer_size], text, len);
-    } else if (e->cursor.x == 0) {
+    } else if (e->buffer_cursor == 0) {
         memmove(&e->text_buff[0 + len], &e->text_buff[0], e->buffer_size);
         memcpy(&e->text_buff[0], text, len);
     } else {
-        memmove(&e->text_buff[e->cursor.x + len], &e->text_buff[e->cursor.x], e->buffer_size - e->cursor.x);
-        memcpy(&e->text_buff[e->cursor.x], text, len);
+        memmove(&e->text_buff[e->buffer_cursor + len], &e->text_buff[e->buffer_cursor], e->buffer_size - e->buffer_cursor);
+        memcpy(&e->text_buff[e->buffer_cursor], text, len);
     }
+
     e->buffer_size += len;
-    e->cursor.x += len;
+    e->buffer_cursor += len;
+
+    if (*text == '\n') {
+        cursor_reset_x(&e->cursor);
+        cursor_move_y(&e->cursor, 1);
+    } else {
+        cursor_move_x(&e->cursor, len);
+    }
 }
 
 void editor_delete_at_cursor(Editor* e) {
-    if (e->cursor.x < 0 || e->buffer_size <= 0) return;
+    if (e->buffer_cursor <= 0 || e->buffer_size <= 0) return;
 
-    if (e->cursor.x < e->buffer_size && e->cursor.x > 0) {
-        memmove(&e->text_buff[e->cursor.x - 1],
-                &e->text_buff[e->cursor.x],
-                e->buffer_size - e->cursor.x);
+    if (e->buffer_cursor < e->buffer_size && e->buffer_cursor > 0) {
+        memmove(&e->text_buff[e->buffer_cursor - 1],
+                &e->text_buff[e->buffer_cursor],
+                e->buffer_size - e->buffer_cursor);
     }
+
     e->buffer_size--;
-    e->cursor.x--;
+    e->buffer_cursor--;
+
+    if (e->text_buff[e->buffer_cursor] == '\n') {
+        cursor_reset_x(&e->cursor);
+        cursor_move_y(&e->cursor, -1);
+
+        int last_line_len = last_line_length(e->text_buff, e->buffer_size);
+        cursor_move_x(&e->cursor, last_line_len);
+    } else {
+        cursor_move_x(&e->cursor, -1);
+    }
+}
+
+void cursor_move_x(struct _cursor* c, int val) {
+    c->x += val;
+}
+
+void cursor_move_y(struct _cursor* c, int val) {
+    c->y += val;
+}
+ 
+void cursor_reset_x(struct _cursor* c) {
+    c->x = 0;
 }

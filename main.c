@@ -10,7 +10,6 @@
 #define WINDOW_HEIGHT 800
 #define WINDOW_WIDTH 600
 
-// @TODO: handle deleting in the middle of the line
 int main(void) {
     scc(SDL_Init(SDL_INIT_VIDEO));
 
@@ -30,6 +29,7 @@ int main(void) {
                         } break;
 
                         case SDLK_RETURN: {
+                            editor_insert_at_cursor("\n", &e);
                         } break;
 
                         case SDLK_BACKSPACE: {
@@ -37,14 +37,16 @@ int main(void) {
                         } break;
 
                         case SDLK_LEFT: {
-                            if (e.cursor.x > 0) {
-                                e.cursor.x--;
+                            if (e.buffer_cursor > 0) {
+                                e.buffer_cursor--;
+                                cursor_move_x(&e.cursor, -1);
                             }
                         } break;
 
                         case SDLK_RIGHT: {
-                            if (e.cursor.x < e.buffer_size) {
-                                e.cursor.x++;
+                            if (e.buffer_cursor < e.buffer_size) {
+                                e.buffer_cursor++;
+                                cursor_move_x(&e.cursor, 1);
                             }
                         } break;
                    }
