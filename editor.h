@@ -12,6 +12,7 @@ struct _cursor {
 };
 
 void cursor_reset_x(struct _cursor* c);
+void cursor_reset_y(struct _cursor* c);
 void cursor_move_x(struct _cursor* c, int val);
 void cursor_move_y(struct _cursor* c, int val);
 

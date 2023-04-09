@@ -39,15 +39,23 @@ int main(void) {
                         case SDLK_LEFT: {
                             if (e.buffer_cursor > 0) {
                                 e.buffer_cursor--;
-                                cursor_move_x(&e.cursor, -1);
                             }
+                            cursor_move_x(&e.cursor, -1);
                         } break;
 
                         case SDLK_RIGHT: {
                             if (e.buffer_cursor < e.buffer_size) {
                                 e.buffer_cursor++;
-                                cursor_move_x(&e.cursor, 1);
                             }
+                            cursor_move_x(&e.cursor, 1);
+                        } break;
+
+                        case SDLK_UP: {
+                            cursor_move_y(&e.cursor, -1);
+                        } break;
+
+                        case SDLK_DOWN: {
+                            cursor_move_y(&e.cursor, 1);
                         } break;
                    }
                 } break;

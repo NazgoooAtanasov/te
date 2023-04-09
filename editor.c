@@ -106,12 +106,18 @@ void editor_delete_at_cursor(Editor* e) {
 
 void cursor_move_x(struct _cursor* c, int val) {
     c->x += val;
+    if (c->x < 0) cursor_reset_x(c);
 }
 
 void cursor_move_y(struct _cursor* c, int val) {
     c->y += val;
+    if (c->y < 0) cursor_reset_y(c);
 }
  
 void cursor_reset_x(struct _cursor* c) {
     c->x = 0;
+}
+
+void cursor_reset_y(struct _cursor* c) {
+    c->y = 0;
 }
