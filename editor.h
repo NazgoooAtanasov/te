@@ -3,6 +3,7 @@
 
 #include <SDL2/SDL.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include "font.h"
 #include "stringutil.h"
 
@@ -26,9 +27,11 @@ typedef struct _editor {
     SDL_Renderer* sdlr;
 
     struct _cursor cursor;
+
+    const char* file_path;
 } Editor;
 
-void editor_init(Editor* e, SDL_Window* window);
+void editor_init(Editor* e, SDL_Window* window, const char* file_path);
 void editor_render_text(Editor* e);
 void editor_render_cursor(Editor* e);
 void editor_free(Editor* e);

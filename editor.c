@@ -1,18 +1,35 @@
 #include "editor.h"
 #include "stringutil.h"
 
-void editor_init(Editor* e, SDL_Window* window) {
+void editor_init(Editor* e, SDL_Window* window, const char* file_path) {
     e->buffer_size = 0;
     e->buffer_cursor = 0;
     e->sdlr = scp(SDL_CreateRenderer(window, -1, 0));
 
     e->cursor.x = 0;
     e->cursor.y = 0;
+
+    e->file_path = NULL;
     
     { // font initialization
         Font f;
         font_load_font(e->sdlr, &f);
         e->font = f;
+    }
+
+    { // loading of proviced file by path
+        if (file_path != NULL) {
+            FILE* fd = fopen(file_path, "r");
+            fseek(fd, 0, SEEK_END);
+            int len = ftell(fd);
+            fseek(fd, 0, SEEK_SET);
+            char* text = malloc(sizeof(char) * len);
+            fread(text, len, sizeof(char), fd);
+            memcpy(e->text_buff, text, len);
+            e->buffer_size = len;
+            e->buffer_cursor = len;
+            e->file_path = file_path;
+        }
     }
 }
 
