@@ -10,12 +10,18 @@
 #define WINDOW_HEIGHT 800
 #define WINDOW_WIDTH 600
 
-int main(void) {
+int main(int argc, char* argv[]) {
     scc(SDL_Init(SDL_INIT_VIDEO));
 
     SDL_Window* window = scp(SDL_CreateWindow("te", 0, 0, WINDOW_HEIGHT, WINDOW_WIDTH, SDL_WINDOW_RESIZABLE));
     Editor e;
-    editor_init(&e, window);
+
+    char* file_path = NULL;
+    if (argc > 1) {
+        file_path = argv[1];
+    }
+
+    editor_init(&e, window, file_path);
 
     bool should_run = true;
     while(should_run) {

@@ -6,6 +6,14 @@
 
 #include <SDL2/SDL.h>
 
+typedef struct {
+    size_t x;
+    size_t y;
+} vec2;
+
+vec2 vec2_create(size_t x, size_t y);
+
+// sdl error handling
 void scc(int code);
 void* scp(void* ptr);
 

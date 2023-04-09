@@ -3,6 +3,7 @@
 
 #include <SDL2/SDL.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include "font.h"
 #include "stringutil.h"
 
@@ -15,6 +16,7 @@ void cursor_reset_x(struct _cursor* c);
 void cursor_reset_y(struct _cursor* c);
 void cursor_move_x(struct _cursor* c, int val);
 void cursor_move_y(struct _cursor* c, int val);
+vec2 cursor_calc_end_position(const char* str, size_t str_len);
 
 #define TEXT_BUFF_CAP 1024
 typedef struct _editor {
@@ -26,9 +28,11 @@ typedef struct _editor {
     SDL_Renderer* sdlr;
 
     struct _cursor cursor;
+
+    const char* file_path;
 } Editor;
 
-void editor_init(Editor* e, SDL_Window* window);
+void editor_init(Editor* e, SDL_Window* window, const char* file_path);
 void editor_render_text(Editor* e);
 void editor_render_cursor(Editor* e);
 void editor_free(Editor* e);
