@@ -1,5 +1,4 @@
 #include "editor.h"
-#include "stringutil.h"
 
 void editor_init(Editor* e, SDL_Window* window, const char* file_path) {
     e->buffer_size = 0;
@@ -29,6 +28,10 @@ void editor_init(Editor* e, SDL_Window* window, const char* file_path) {
             e->buffer_size = len;
             e->buffer_cursor = len;
             e->file_path = file_path;
+
+            vec2 cur_pos = cursor_calc_end_position(e->text_buff, e->buffer_size);
+            e->cursor.x = cur_pos.x;
+            e->cursor.y = cur_pos.y;
         }
     }
 }
@@ -137,4 +140,15 @@ void cursor_reset_x(struct _cursor* c) {
 
 void cursor_reset_y(struct _cursor* c) {
     c->y = 0;
+}
+
+vec2 cursor_calc_end_position(const char* str, size_t str_len) {
+    int x = last_line_length(str, str_len);
+    size_t y = 0;
+    for (size_t i = 0; i < str_len; ++i) {
+        if (str[i] == '\n') y++;
+    }
+
+    vec2 v2 = vec2_create(x, y);
+    return v2;
 }

@@ -14,3 +14,10 @@ void* scp(void* ptr) {
     }
     return ptr;
 }
+
+vec2 vec2_create(size_t x, size_t y) {
+    return (vec2) {
+        .x = x,
+        .y = y
+    };
+}

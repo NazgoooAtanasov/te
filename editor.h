@@ -16,6 +16,7 @@ void cursor_reset_x(struct _cursor* c);
 void cursor_reset_y(struct _cursor* c);
 void cursor_move_x(struct _cursor* c, int val);
 void cursor_move_y(struct _cursor* c, int val);
+vec2 cursor_calc_end_position(const char* str, size_t str_len);
 
 #define TEXT_BUFF_CAP 1024
 typedef struct _editor {
